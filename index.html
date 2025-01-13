@@ -77,11 +77,15 @@
     </div>
 
     <div id="outputDiv"></div>
+    <div class="info">
+      <strong>Note:</strong> This demo calls the Google Translation API client-side.  
+      Use your own <code>API_KEY</code> below, but be aware it is not secure to store your key in client-side code.
+    </div>
   </div>
 
   <script>
     // Replace with your actual Google Cloud API key
-    const GOOGLE_TRANSLATE_API_KEY = "YOUR_API_KEY_HERE";
+    const GOOGLE_TRANSLATE_API_KEY = "AIzaSyAM2gJwnJxNHyYvVfInw47x8iNLD11eNkg";
 
     // We'll store the randomly generated snippet here
     let generatedTextSnippet = "";
@@ -142,7 +146,7 @@
      * @returns {Promise<string>} - The translated text
      */
     async function googleTranslate(text, sourceLang, targetLang) {
-      const url = `https://translation.googleapis.com/language/translate/v2?key=${AIzaSyAM2gJwnJxNHyYvVfInw47x8iNLD11eNkg}`;
+      const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`;
 
       // The body for POST
       const body = {
