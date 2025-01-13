@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>4-Line Generator and Lithuanian Translator</title>
+  <title>4-Line Latin-to-Lithuanian Translator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -56,14 +56,20 @@
       border-radius: 5px;
       min-height: 4em; /* just to show space even if empty */
     }
+
+    .info {
+      font-size: 0.9em;
+      color: #888;
+      margin-top: 1em;
+    }
   </style>
 </head>
 <body>
 
-  <h1>4-Line Generator & Translator</h1>
+  <h1>4-Line Latin-to-Lithuanian Translator</h1>
   <div class="container">
-    <label for="inputTextArea">Enter your multi-line text:</label>
-    <textarea id="inputTextArea" rows="8" placeholder="Type or paste multiple lines here..."></textarea>
+    <label for="inputTextArea">Enter your multi-line Latin text:</label>
+    <textarea id="inputTextArea" rows="8" placeholder="Type or paste multiple lines of Latin text here..."></textarea>
 
     <div>
       <button onclick="generateLines()">Generate 4 lines</button>
@@ -71,15 +77,27 @@
     </div>
 
     <div id="outputDiv"></div>
+    <div class="info">
+      <strong>Note:</strong> This demo calls the Google Translation API client-side.  
+      Use your own <code>API_KEY</code> below, but be aware it is not secure to store your key in client-side code.
+    </div>
   </div>
 
   <script>
-    // Variable to keep track of the last generated snippet
+    // Replace with your actual Google Cloud API key
+    const GOOGLE_TRANSLATE_API_KEY = "YOUR_API_KEY_HERE";
+
+    // We'll store the randomly generated snippet here
     let generatedTextSnippet = "";
 
+    /**
+     * Splits user input into lines, filters out empty lines,
+     * chooses a random consecutive group of 4 lines,
+     * and displays them.
+     */
     function generateLines() {
       const textInput = document.getElementById("inputTextArea").value;
-      const lines = textInput.split(/\r?\n/).filter(Boolean); // Split on newlines, remove empty lines
+      const lines = textInput.split(/\r?\n/).filter(Boolean); // remove empty lines
 
       if (lines.length < 4) {
         document.getElementById("outputDiv").textContent = 
@@ -87,37 +105,72 @@
         return;
       }
 
-      // Pick a random starting index so that we can get 4 consecutive lines
+      // Pick a random starting index where we can get 4 consecutive lines
       const randomStart = Math.floor(Math.random() * (lines.length - 3));
       const selectedLines = lines.slice(randomStart, randomStart + 4);
 
-      // Join the 4 lines back for display
+      // Store the 4 lines in a global variable
       generatedTextSnippet = selectedLines.join("\n");
 
-      // Display the generated snippet
+      // Display them
       document.getElementById("outputDiv").textContent = generatedTextSnippet;
     }
 
-    function translateToLithuanian() {
+    /**
+     * Calls the Google Translation API to translate the snippet
+     * from Latin (la) to Lithuanian (lt).
+     */
+    async function translateToLithuanian() {
       if (!generatedTextSnippet) {
         document.getElementById("outputDiv").textContent =
           "No lines to translate. Please click 'Generate 4 lines' first.";
         return;
       }
 
-      // For demonstration, we create a mock Lithuanian translation.
-      // Replace this with a call to a real translation API if needed.
-      const lithuanianTranslation = mockTranslateToLithuanian(generatedTextSnippet);
-
-      // Display the translation
-      document.getElementById("outputDiv").textContent = lithuanianTranslation;
+      try {
+        const translatedText = await googleTranslate(generatedTextSnippet, 'la', 'lt');
+        document.getElementById("outputDiv").textContent = translatedText;
+      } catch (error) {
+        document.getElementById("outputDiv").textContent =
+          "Translation failed: " + error.message;
+      }
     }
 
-    // Simple mock translation function (for demonstration only)
-    function mockTranslateToLithuanian(text) {
-      // In a real application, you'd call an API here.
-      // For now, just simulate with a string:
-      return "Lietuviškas vertimas (pavyzdinis):\n\n" + text;
+    /**
+     * Sends a request to the Google Translation API
+     * to translate `text` from `sourceLang` to `targetLang`.
+     *
+     * @param {string} text - The text to translate
+     * @param {string} sourceLang - The source language code (e.g., 'la' for Latin)
+     * @param {string} targetLang - The target language code (e.g., 'lt' for Lithuanian)
+     * @returns {Promise<string>} - The translated text
+     */
+    async function googleTranslate(text, sourceLang, targetLang) {
+      const url = `https://translation.googleapis.com/language/translate/v2?key=$AIzaSyAM2gJwnJxNHyYvVfInw47x8iNLD11eNkg`;
+
+      // The body for POST
+      const body = {
+        q: text,
+        source: sourceLang,
+        target: targetLang,
+        format: 'text'
+      };
+
+      // Send a POST request
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+      });
+
+      // Parse the response
+      const data = await response.json();
+
+      if (data && data.data && data.data.translations && data.data.translations[0]) {
+        return data.data.translations[0].translatedText;
+      } else {
+        throw new Error("No translation found in response.");
+      }
     }
   </script>
 </body>
