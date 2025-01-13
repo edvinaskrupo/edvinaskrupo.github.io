@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>4-Line Generator and Lithuanian Translator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2em;
+      background: #f7f7f7;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 1em;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.5em;
+      margin-bottom: 1em;
+      resize: vertical;
+    }
+
+    button {
+      display: inline-block;
+      margin-right: 1em;
+      padding: 0.5em 1em;
+      cursor: pointer;
+      border: none;
+      border-radius: 3px;
+      background-color: #007BFF;
+      color: #fff;
+      font-size: 1em;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #outputDiv {
+      margin-top: 1em;
+      white-space: pre-wrap; /* preserve line breaks */
+      background: #f0f0f0;
+      padding: 1em;
+      border-radius: 5px;
+      min-height: 4em; /* just to show space even if empty */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>4-Line Generator & Translator</h1>
+  <div class="container">
+    <label for="inputTextArea">Enter your multi-line text:</label>
+    <textarea id="inputTextArea" rows="8" placeholder="Type or paste multiple lines here..."></textarea>
+
+    <div>
+      <button onclick="generateLines()">Generate 4 lines</button>
+      <button onclick="translateToLithuanian()">Translate to Lithuanian</button>
+    </div>
+
+    <div id="outputDiv"></div>
+  </div>
+
+  <script>
+    // Variable to keep track of the last generated snippet
+    let generatedTextSnippet = "";
+
+    function generateLines() {
+      const textInput = document.getElementById("inputTextArea").value;
+      const lines = textInput.split(/\r?\n/).filter(Boolean); // Split on newlines, remove empty lines
+
+      if (lines.length < 4) {
+        document.getElementById("outputDiv").textContent = 
+          "Please enter at least 4 lines of text to generate a snippet.";
+        return;
+      }
+
+      // Pick a random starting index so that we can get 4 consecutive lines
+      const randomStart = Math.floor(Math.random() * (lines.length - 3));
+      const selectedLines = lines.slice(randomStart, randomStart + 4);
+
+      // Join the 4 lines back for display
+      generatedTextSnippet = selectedLines.join("\n");
+
+      // Display the generated snippet
+      document.getElementById("outputDiv").textContent = generatedTextSnippet;
+    }
+
+    function translateToLithuanian() {
+      if (!generatedTextSnippet) {
+        document.getElementById("outputDiv").textContent =
+          "No lines to translate. Please click 'Generate 4 lines' first.";
+        return;
+      }
+
+      // For demonstration, we create a mock Lithuanian translation.
+      // Replace this with a call to a real translation API if needed.
+      const lithuanianTranslation = mockTranslateToLithuanian(generatedTextSnippet);
+
+      // Display the translation
+      document.getElementById("outputDiv").textContent = lithuanianTranslation;
+    }
+
+    // Simple mock translation function (for demonstration only)
+    function mockTranslateToLithuanian(text) {
+      // In a real application, you'd call an API here.
+      // For now, just simulate with a string:
+      return "Lietuviškas vertimas (pavyzdinis):\n\n" + text;
+    }
+  </script>
+</body>
+</html>
