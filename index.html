@@ -77,10 +77,6 @@
     </div>
 
     <div id="outputDiv"></div>
-    <div class="info">
-      <strong>Note:</strong> This demo calls the Google Translation API client-side.  
-      Use your own <code>API_KEY</code> below, but be aware it is not secure to store your key in client-side code.
-    </div>
   </div>
 
   <script>
@@ -146,7 +142,7 @@
      * @returns {Promise<string>} - The translated text
      */
     async function googleTranslate(text, sourceLang, targetLang) {
-      const url = `https://translation.googleapis.com/language/translate/v2?key=$AIzaSyAM2gJwnJxNHyYvVfInw47x8iNLD11eNkg`;
+      const url = `https://translation.googleapis.com/language/translate/v2?key=${AIzaSyAM2gJwnJxNHyYvVfInw47x8iNLD11eNkg}`;
 
       // The body for POST
       const body = {
